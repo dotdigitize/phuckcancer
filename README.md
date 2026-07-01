@@ -1,5 +1,11 @@
 # PhuckCancer
 
+🚀 **Project Demo**
+
+[![Watch the Demo](https://img.youtube.com/vi/CNf_wou7C30/maxresdefault.jpg)](https://www.youtube.com/watch?v=CNf_wou7C30)
+
+Open Source Cancer Research Platform powered by MAMMAL and local LLMs.
+
 <img width="1536" height="1024" alt="jose perez phuck cancer research cure cancer" src="https://github.com/user-attachments/assets/0969e2ea-6aeb-484b-baab-0530ff4765cd" />
 
 PhuckCancer provides visualization, analysis, AI interpretation, evidence auditing, and human-reviewable reporting for large-scale cancer genomics, molecular evidence, mutation, pathway, treatment-response, and clinical-trial signal datasets.
