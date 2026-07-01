@@ -80,7 +80,7 @@ Security and privacy requirements:
 
 MAMMAL stands for Molecular Aligned Multi-Modal Architecture and Language.
 
-https://github.com/BiomedSciAI/biomed-multi-alignment/blob/main/mammal.png
+<img width="1547" height="1067" alt="mammal" src="https://github.com/user-attachments/assets/e51377d9-be9b-4449-b562-7541cd61a8e2" />
 
 Official code: https://github.com/BiomedSciAI/biomed-multi-alignment
 
