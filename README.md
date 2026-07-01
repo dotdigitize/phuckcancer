@@ -1,6 +1,6 @@
 # PhuckCancer
 
-![PhuckCancer banner placeholder](docs/banner-placeholder.png)
+<img width="1536" height="1024" alt="jose perez phuck cancer research cure cancer" src="https://github.com/user-attachments/assets/7b4c17cb-0b3d-4c9c-a0ca-f57e7e907ece" />
 
 PhuckCancer provides visualization, analysis, AI interpretation, evidence auditing, and human-reviewable reporting for large-scale cancer genomics, molecular evidence, mutation, pathway, treatment-response, and clinical-trial signal datasets.
 
@@ -11,6 +11,7 @@ PhuckCancer is the full cancer evidence platform. MAMMAL is the biomedical AI en
 ## Core Mission
 
 PhuckCancer exists to help doctors, researchers, patients, and families understand cancer evidence faster, organize it better, and fight cancer with stronger information.
+
 
 The platform brings together cancer genomics data, molecular evidence, mutation and pathway analysis, a MAMMAL-powered biomedical AI engine, local LLM explanation, evidence auditing, optional external cancer genomics data retrieval, and human-reviewable reporting into one open-source cancer intelligence system.
 
@@ -78,6 +79,8 @@ Security and privacy requirements:
 ## MAMMAL Install
 
 MAMMAL stands for Molecular Aligned Multi-Modal Architecture and Language.
+
+https://github.com/BiomedSciAI/biomed-multi-alignment/blob/main/mammal.png
 
 Official code: https://github.com/BiomedSciAI/biomed-multi-alignment
 
