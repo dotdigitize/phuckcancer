@@ -6,11 +6,11 @@ PhuckCancer provides visualization, analysis, AI interpretation, evidence auditi
 
 It's really simple but powerful: 
 
-Cancer data goes in.
-MAMMAL compares it against its learned biological patterns.
-MAMMAL outputs molecular interpretation.
-PhuckCancer checks the evidence.
-The local LLM explains it to humans.
+- Cancer data goes in.
+- MAMMAL compares it against its learned biological patterns.
+- MAMMAL outputs molecular interpretation.
+- PhuckCancer checks the evidence.
+- The local LLM explains it to humans.
 
 Creator and author: Jose Perez. GitHub: dotdigitize. License: Apache License 2.0. Copyright 2026 Jose Perez.
 
