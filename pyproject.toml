@@ -1,0 +1,12 @@
+[project]
+name = "phuckcancer"
+version = "0.1.0"
+description = "Open-source cancer genomics and biomedical AI evidence portal with MAMMAL-powered interpretation, evidence auditing, local LLM support, and cBioPortal connector."
+authors = [{ name = "Jose Perez" }]
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+keywords = ["cancer", "cancer genomics", "oncology", "MAMMAL", "biomedical AI", "medical AI", "evidence audit", "precision oncology", "clinical trial evidence", "drug resistance", "local LLM", "AGI-assisted research", "cBioPortal connector", "genomics data"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

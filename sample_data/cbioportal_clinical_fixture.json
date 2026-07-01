@@ -1,0 +1,4 @@
+[
+  {"sampleId": "SYN-CBIO-001", "attributeId": "CANCER_TYPE", "value": "Lung adenocarcinoma"},
+  {"sampleId": "SYN-CBIO-003", "attributeId": "CANCER_TYPE", "value": "Breast cancer"}
+]

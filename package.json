@@ -1,0 +1,51 @@
+{
+  "name": "phuckcancer",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Open-source cancer genomics, oncology, biomedical AI, evidence audit, precision oncology, local LLM, drug resistance, clinical trial evidence, cBioPortal connector, and genomics data portal.",
+  "keywords": [
+    "cancer",
+    "cancer-genomics",
+    "oncology",
+    "tumor-genomics",
+    "mammal",
+    "biomedical-ai",
+    "medical-ai",
+    "evidence-auditing",
+    "precision-oncology",
+    "drug-resistance",
+    "clinical-trials",
+    "local-llm",
+    "ollama",
+    "cbioportal",
+    "cancer-data",
+    "cancer-api",
+    "genomics-data",
+    "fastapi",
+    "react",
+    "typescript",
+    "mariadb",
+    "python",
+    "open-source"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "4.3.4",
+    "react": "latest",
+    "react-dom": "latest",
+    "vite": "5.4.11"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.7.2"
+  }
+}

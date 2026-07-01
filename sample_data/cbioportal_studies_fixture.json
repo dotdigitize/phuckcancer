@@ -1,0 +1,4 @@
+[
+  {"studyId": "synthetic_luad_cbioportal", "name": "Synthetic LUAD cBioPortal Fixture", "cancerTypeId": "luad", "description": "Synthetic study metadata for connector tests."},
+  {"studyId": "synthetic_brca_cbioportal", "name": "Synthetic BRCA cBioPortal Fixture", "cancerTypeId": "brca", "description": "Synthetic study metadata for connector tests."}
+]

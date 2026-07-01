@@ -1,0 +1,3 @@
+[
+  {"title": "Synthetic EGFR biomarker trial signal", "biomarker": "EGFR L858R", "cancer_type": "Lung adenocarcinoma", "inclusion_like_evidence": "EGFR alteration present", "exclusion_like_concern": "Prior therapy and performance status unknown", "missing_required_information": ["trial protocol criteria", "oncologist/research coordinator review"], "evidence_status": "Possible signal for review", "human_review_status": "Needs oncologist/research coordinator review"}
+]

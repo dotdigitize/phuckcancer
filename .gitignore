@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+node_modules/
+dist/
+.env
+reports/*.md
+reports/*.json
+!reports/.gitkeep
+*.log
+
+# Generated/runtime files
+.pytest_cache/
+dist/
+reports/
+.venv/
+node_modules/
+__pycache__/
+*.pyc

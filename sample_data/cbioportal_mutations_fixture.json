@@ -1,0 +1,5 @@
+[
+  {"gene": {"hugoGeneSymbol": "EGFR"}, "entrezGeneId": 1956, "sampleId": "SYN-CBIO-001", "studyId": "synthetic_luad_cbioportal", "proteinChange": "L858R", "mutationType": "Missense_Mutation"},
+  {"gene": {"hugoGeneSymbol": "KRAS"}, "entrezGeneId": 3845, "sampleId": "SYN-CBIO-002", "studyId": "synthetic_luad_cbioportal", "proteinChange": "G12C", "mutationType": "Missense_Mutation"},
+  {"gene": {"hugoGeneSymbol": "BRCA1"}, "entrezGeneId": 672, "sampleId": "SYN-CBIO-003", "studyId": "synthetic_brca_cbioportal", "proteinChange": "Loss", "mutationType": "Structural_Variant"}
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "record_id": "synthetic-luad-cohort-001",
+    "study": "Synthetic Lung Cancer Research Fixture",
+    "cancer_type": "Lung adenocarcinoma",
+    "sample_group": "LUAD synthetic cohort A",
+    "human_review_status": "needs_human_review",
+    "alterations": [
+      {"gene": "EGFR", "sample_id": "SYN-LUAD-001", "cancer_type": "Lung adenocarcinoma", "alteration_type": "mutation", "variant": "L858R", "mutation_class": "missense", "pathway": "EGFR signaling"},
+      {"gene": "KRAS", "sample_id": "SYN-LUAD-002", "cancer_type": "Lung adenocarcinoma", "alteration_type": "mutation", "variant": "G12C", "mutation_class": "missense", "pathway": "MAPK pathway"},
+      {"gene": "PIK3CA", "sample_id": "SYN-LUAD-003", "cancer_type": "Lung adenocarcinoma", "alteration_type": "amplification", "copy_number_alteration": "gain", "pathway": "PI3K/AKT pathway"}
+    ],
+    "evidence": []
+  },
+  {
+    "record_id": "synthetic-brca-cohort-001",
+    "study": "Synthetic Breast Cancer Research Fixture",
+    "cancer_type": "Breast cancer",
+    "sample_group": "BRCA synthetic cohort B",
+    "human_review_status": "needs_human_review",
+    "alterations": [
+      {"gene": "TP53", "sample_id": "SYN-BRCA-001", "cancer_type": "Breast cancer", "alteration_type": "mutation", "variant": "R175H", "mutation_class": "missense", "pathway": "Cell cycle regulation"},
+      {"gene": "BRCA1", "sample_id": "SYN-BRCA-002", "cancer_type": "Breast cancer", "alteration_type": "deletion", "copy_number_alteration": "loss", "pathway": "DNA repair"},
+      {"gene": "BRCA2", "sample_id": "SYN-BRCA-003", "cancer_type": "Breast cancer", "alteration_type": "expression", "expression_signal": "reduced expression", "pathway": "DNA repair"}
+    ],
+    "evidence": []
+  }
+]

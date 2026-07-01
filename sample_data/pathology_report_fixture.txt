@@ -1,0 +1,1 @@
+Synthetic pathology note: tumor genomics section mentions EGFR L858R and TP53 R175H as molecular findings. This fixture contains no real patient identifiers and is intended for evidence-audit testing only.

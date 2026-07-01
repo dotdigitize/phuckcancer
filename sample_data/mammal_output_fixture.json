@@ -1,0 +1,7 @@
+{
+  "findings": [
+    "EGFR alteration suggests an EGFR signaling research signal that needs evidence audit.",
+    "BRCA1 loss suggests DNA repair pathway disruption that needs qualified human review."
+  ],
+  "interpretation": "EGFR alteration suggests an EGFR signaling research signal. BRCA1 loss suggests DNA repair pathway disruption. This does not determine treatment and needs qualified human review."
+}
