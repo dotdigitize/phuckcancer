@@ -4,6 +4,14 @@
 
 PhuckCancer provides visualization, analysis, AI interpretation, evidence auditing, and human-reviewable reporting for large-scale cancer genomics, molecular evidence, mutation, pathway, treatment-response, and clinical-trial signal datasets.
 
+It's really simple but powerful: 
+
+Cancer data goes in.
+MAMMAL compares it against its learned biological patterns.
+MAMMAL outputs molecular interpretation.
+PhuckCancer checks the evidence.
+The local LLM explains it to humans.
+
 Creator and author: Jose Perez. GitHub: dotdigitize. License: Apache License 2.0. Copyright 2026 Jose Perez.
 
 PhuckCancer is the full cancer evidence platform. MAMMAL is the biomedical AI engine inside it. The local LLM is the plain-English assistant. The evidence portal is the interface doctors, researchers, patients, and families use. Optional external data connectors allow PhuckCancer to retrieve and normalize cancer genomics data from supported research portals and APIs.
