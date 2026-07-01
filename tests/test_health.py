@@ -10,5 +10,8 @@ def test_health():
 def test_system_status_is_local_safe():
     client = TestClient(app)
     data = client.get("/api/system/status").json()
-    assert data["database"]["enabled"] is False
+    assert data["backend_port"] == 8717
+    assert data["frontend_port"] == 5179
+    assert data["database_provider"] == "mariadb"
+    assert data["mammal_required"] is True
     assert "not a medical device" in data["medical_safety"]

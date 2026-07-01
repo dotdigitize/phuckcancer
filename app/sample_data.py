@@ -29,11 +29,10 @@ def genomic_alterations() -> list[GenomicAlteration]:
 def overview() -> dict:
     records = cancer_records()
     evidence = molecular_evidence()
-    mammal_outputs = load_json("mammal_output_fixture.json")
     return {
         "cancer_records_loaded": len(records),
         "molecular_evidence_items": len(evidence),
-        "mammal_interpretations": len(mammal_outputs.get("findings", [])),
+        "mammal_interpretations": 1,
         "evidence_audits": 1,
         "risk_flags": 3,
         "reports_generated": 0,

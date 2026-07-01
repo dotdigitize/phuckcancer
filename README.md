@@ -14,7 +14,7 @@ It's really simple but powerful:
 
 Creator and author: Jose Perez. GitHub: dotdigitize. License: Apache License 2.0. Copyright 2026 Jose Perez.
 
-PhuckCancer is the full cancer evidence platform. MAMMAL is the biomedical AI engine inside it. The local LLM is the plain-English assistant. The evidence portal is the interface doctors, researchers, patients, and families use. Optional external data connectors allow PhuckCancer to retrieve and normalize cancer genomics data from supported research portals and APIs.
+PhuckCancer is the full cancer evidence platform. MAMMAL is the required biomedical AI engine inside it. The local LLM is the plain-English assistant that explains MAMMAL's structured interpretation. The evidence portal is the interface doctors, researchers, patients, and families use. Optional external data connectors allow PhuckCancer to retrieve and normalize cancer genomics data from supported research portals and APIs.
 
 ## Core Mission
 
@@ -52,7 +52,53 @@ Cancer genomics data, report text, molecular evidence, external connector data, 
 
 PhuckCancer includes a cancer evidence portal, genomic alteration matrix, cancer pathway explorer, MAMMAL biomedical AI engine, local LLM patient and family assistant, evidence auditing, clinical-trial signal organizer, drug resistance signal watcher, optional cBioPortal data connector, and doctor/family report builder.
 
-The MAMMAL research pipeline includes `app/mammal_engine.py`, `app/mammal_pipeline.py`, `app/mammal_importer.py`, `app/mammal_output_parser.py`, and `app/mammal_claim_extractor.py`. Tests pass without live MAMMAL installed by using deterministic fallback interpretation.
+The MAMMAL research pipeline includes `app/mammal_engine.py`, `app/mammal_pipeline.py`, `app/mammal_providers.py`, `app/mammal_api_client.py`, `app/mammal_importer.py`, `app/mammal_output_parser.py`, and `app/mammal_claim_extractor.py`. Tests pass without live MAMMAL installed by mocking provider behavior; runtime biomedical interpretation still requires local MAMMAL or a configured MAMMAL API provider.
+
+## Why MAMMAL Is Required
+
+MAMMAL is the required biomedical reasoning engine inside PhuckCancer. PhuckCancer uses MAMMAL to interpret cancer molecular evidence through its learned biological representation across proteins/biologics, small molecules/chemistry, and gene/transcriptomic data.
+
+PhuckCancer applies MAMMAL in a cancer evidence workflow. Cancer genomics records, mutation data, pathway evidence, resistance signals, treatment-response notes, clinical-trial signals, and normalized external cancer data are routed into the MAMMAL-powered interpretation layer. MAMMAL produces structured biomedical interpretation that is then audited, risk-flagged, explained by the local LLM, and turned into human-reviewable reports.
+
+PhuckCancer does not replace MAMMAL with fake or deterministic biomedical output. If MAMMAL is not installed locally and no MAMMAL API provider is configured, PhuckCancer fails closed and reports that the biomedical engine is unavailable.
+
+The local LLM does not replace MAMMAL. The local LLM explains MAMMAL's structured biomedical interpretation in plain English for doctors, researchers, patients, and families.
+
+## MAMMAL Provider Modes
+
+PhuckCancer can use MAMMAL in two provider modes:
+
+1. Local MAMMAL provider
+
+The local provider loads MAMMAL from the installed Python package and model files on the same machine.
+
+2. MAMMAL API provider
+
+The API provider connects to a MAMMAL service running on another local server, institutional server, private research machine, or dedicated biomedical model server. This allows PhuckCancer to use a larger MAMMAL deployment without installing the full model on the web application server.
+
+Example API config:
+
+```env
+MAMMAL_REQUIRED=true
+MAMMAL_PROVIDER=api
+MAMMAL_API_BASE_URL=http://localhost:9000
+MAMMAL_API_TOKEN=
+MAMMAL_API_INTERPRET_PATH=/v1/interpret
+MAMMAL_API_HEALTH_PATH=/health
+```
+
+## Role-Based Local LLM Explanations
+
+PhuckCancer asks what type of user is using the system before generating local LLM explanations.
+
+The same MAMMAL interpretation can be explained differently depending on the user:
+
+- Patient or family member: plain English, appointment questions, uncertainty, and "ask your oncologist" language.
+- Doctor or tumor board reviewer: molecular evidence, pathway context, risk flags, support scores, and clinical review questions.
+- Cancer researcher: mechanisms, evidence gaps, research hypotheses, and reproducible notes.
+- Data engineer or system administrator: data source status, MAMMAL provider status, MariaDB setup, cBioPortal connector configuration, and API behavior.
+
+The local LLM does not create the biomedical interpretation. MAMMAL does. The local LLM formats and explains MAMMAL's structured output for the selected user type.
 
 ## How MAMMAL and the Local LLM Work Together
 
@@ -257,7 +303,7 @@ CBIOPORTAL_AUTH_TOKEN=
 
 When enabled, PhuckCancer can retrieve cancer studies, cancer types, sample lists, molecular profiles, mutation records, and available clinical data from a cBioPortal API instance, normalize the records into the PhuckCancer data model, and route the findings into the MAMMAL-powered biomedical interpretation and evidence audit pipeline.
 
-This connector is optional. Local development, tests, sample fixtures, and core PhuckCancer workflows must work without cBioPortal, internet access, authentication, MariaDB, MAMMAL, or Ollama.
+This connector is optional. Local development, tests, sample fixtures, and non-interpretation workflows must work without cBioPortal, internet access, authentication, MariaDB, or Ollama. Biomedical interpretation workflows require MAMMAL.
 
 Security and privacy requirements:
 
@@ -303,6 +349,27 @@ model.eval()
 
 If that import path changes upstream, confirm the latest official usage from the MAMMAL repository. The application itself runs tests without live MAMMAL.
 
+## MariaDB Demo Database
+
+PhuckCancer uses MariaDB/MySQL for its demo database and persistence layer. SQLite is not used.
+
+```bash
+sudo apt install mariadb-server mariadb-client
+mysql -u root -p
+```
+
+```sql
+CREATE DATABASE phuckcancer_demo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'phuckcancer_user'@'localhost' IDENTIFIED BY 'change_this_password';
+GRANT ALL PRIVILEGES ON phuckcancer_demo.* TO 'phuckcancer_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+```bash
+mysql -u phuckcancer_user -p phuckcancer_demo < db/schema.sql
+mysql -u phuckcancer_user -p phuckcancer_demo < db/seed_cancer_demo.sql
+```
+
 ## Medical Safety Notice
 
 PhuckCancer is not a medical device, not a diagnostic system, and not a treatment recommendation engine.
@@ -323,7 +390,7 @@ source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 python -m pytest
-uvicorn app.main:app --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8717 --reload
 ```
 
 Frontend:
@@ -334,13 +401,39 @@ npm run build
 npm run dev
 ```
 
+## Running the Interface
+
+Backend:
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8717 --reload
+```
+
+Frontend:
+
+```bash
+npm run dev
+```
+
+Open:
+
+```text
+http://SERVER-IP:5179
+```
+
+Backend API:
+
+```text
+http://SERVER-IP:8717
+```
+
 Ollama optional:
 
 ```bash
 ollama pull gemma4:e4b
 ```
 
-MariaDB optional:
+MariaDB:
 
 ```bash
 sudo apt install mariadb-server mariadb-client
@@ -394,7 +487,7 @@ The mission is to build a complete open-source cancer research and AI evidence p
 
 ## Project Structure
 
-Backend code lives in `app/`, React code in `src/`, MariaDB scripts in `db/`, deterministic fixtures in `sample_data/`, and tests in `tests/`.
+Backend code lives in `app/`, React code in `src/`, MariaDB scripts in `db/`, deterministic sample fixtures in `sample_data/`, and tests in `tests/`.
 
 ## License
 

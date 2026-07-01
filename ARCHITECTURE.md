@@ -1,20 +1,25 @@
 # Architecture
 
-PhuckCancer is a local-first FastAPI and React cancer evidence platform.
+PhuckCancer is a FastAPI and React cancer evidence platform. MAMMAL is the required biomedical reasoning layer for cancer molecular interpretation, and the local LLM explains MAMMAL's structured output according to the selected user role.
 
-Workflow:
+Pipeline:
 
 ```text
-Cancer genomics data, report text, molecular evidence, external connector data, or MAMMAL output
--> parser
--> cancer finding extraction
--> MAMMAL biomedical interpretation layer
+Cancer genomics data / cBioPortal connector data / reports / molecular evidence
+-> parser and normalizer
+-> MAMMAL provider selection
+-> local MAMMAL or MAMMAL API
+-> MAMMAL-powered biomedical interpretation
 -> claim extraction
 -> evidence matching
 -> support scoring
 -> risk flagging
--> human review status
--> Markdown/JSON report export
+-> role-based local LLM explanation
+-> doctor/family/research/system reports
 ```
 
-MAMMAL is integrated through an adapter and pipeline layer with deterministic fallback behavior for tests and local development. Ollama and cBioPortal are optional and disabled by default.
+PhuckCancer uses MAMMAL in a cancer evidence workflow that is different from a normal chatbot. MAMMAL is not used to write friendly responses directly. It is used as the biomedical reasoning layer for molecular cancer evidence. The local LLM then explains MAMMAL's structured output according to the selected user role.
+
+If the local MAMMAL package/model is unavailable and no MAMMAL API provider is configured, biomedical interpretation stops with a clear unavailable error. The application may still use JSON sample fixtures for layout, parser tests, cBioPortal normalization tests, and documentation examples.
+
+Ollama and cBioPortal are optional. MariaDB/MySQL is the persistence layer when database mode is enabled.

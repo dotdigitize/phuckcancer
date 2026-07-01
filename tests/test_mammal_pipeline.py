@@ -1,8 +1,9 @@
-from app.mammal_pipeline import run_mammal_pipeline
+from app.mammal_pipeline import build_mammal_task_payload
 from app.sample_data import molecular_evidence
 
 
-def test_mammal_pipeline_uses_fallback():
-    result = run_mammal_pipeline(molecular_evidence())
-    assert result["interpretation"].fallback_used is True
-    assert result["audit"].matches
+def test_build_mammal_task_payload_instructs_mammal():
+    payload = build_mammal_task_payload(molecular_evidence())
+    assert payload["task"] == "cancer_molecular_evidence_interpretation"
+    assert "MAMMAL as a biomedical reasoning engine" in payload["instruction"]
+    assert "no_treatment_recommendation" in payload["safety_constraints"]

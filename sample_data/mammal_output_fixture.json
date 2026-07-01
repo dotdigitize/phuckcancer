@@ -1,7 +1,13 @@
 {
-  "findings": [
-    "EGFR alteration suggests an EGFR signaling research signal that needs evidence audit.",
-    "BRCA1 loss suggests DNA repair pathway disruption that needs qualified human review."
-  ],
-  "interpretation": "EGFR alteration suggests an EGFR signaling research signal. BRCA1 loss suggests DNA repair pathway disruption. This does not determine treatment and needs qualified human review."
+  "provider": "local",
+  "model_name": "ibm/biomed.omics.bl.sm.ma-ted-458m",
+  "biological_interpretation": "EGFR alteration indicates an EGFR signaling research signal and BRCA1 loss indicates DNA repair pathway disruption.",
+  "molecular_signal": "EGFR and BRCA1 signals should be reviewed with source evidence and molecular profile context.",
+  "pathway_context": "EGFR pathway signaling and homologous recombination DNA repair context are relevant for qualified review.",
+  "evidence_strength": "Evidence support is incomplete until matched to source records and reviewed by qualified professionals.",
+  "uncertainty": "This output does not determine diagnosis, treatment, individual outcome, or clinical-trial eligibility.",
+  "review_questions": [
+    "What source records support the EGFR signal?",
+    "What additional molecular profile information is needed for BRCA1 review?"
+  ]
 }

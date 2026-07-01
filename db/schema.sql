@@ -38,7 +38,21 @@ CREATE TABLE IF NOT EXISTS molecular_evidence (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS pathways (id BIGINT PRIMARY KEY AUTO_INCREMENT, pathway VARCHAR(255) NOT NULL, category VARCHAR(255), evidence_notes TEXT) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-CREATE TABLE IF NOT EXISTS mammal_interpretations (id BIGINT PRIMARY KEY AUTO_INCREMENT, interpretation_id VARCHAR(128) NOT NULL, model_name VARCHAR(255), fallback_used BOOLEAN NOT NULL DEFAULT TRUE, interpretation LONGTEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS mammal_interpretations (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  interpretation_id VARCHAR(128) NOT NULL,
+  provider VARCHAR(32) NOT NULL,
+  model_name VARCHAR(255),
+  biological_interpretation LONGTEXT,
+  molecular_signal TEXT,
+  pathway_context TEXT,
+  evidence_strength TEXT,
+  uncertainty TEXT,
+  review_questions JSON,
+  raw_mammal_output JSON,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_mammal_provider (provider)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS extracted_claims (id BIGINT PRIMARY KEY AUTO_INCREMENT, claim_id VARCHAR(128), claim_text TEXT NOT NULL, gene VARCHAR(64), pathway VARCHAR(255), source VARCHAR(255)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS evidence_matches (id BIGINT PRIMARY KEY AUTO_INCREMENT, claim_id VARCHAR(128), evidence_id VARCHAR(128), support_status VARCHAR(64), support_score DECIMAL(5,2), rationale TEXT) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS risk_flags (id BIGINT PRIMARY KEY AUTO_INCREMENT, flag VARCHAR(128) NOT NULL, claim_id VARCHAR(128), note TEXT) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -48,3 +62,19 @@ CREATE TABLE IF NOT EXISTS external_data_sources (id BIGINT PRIMARY KEY AUTO_INC
 CREATE TABLE IF NOT EXISTS cbioportal_imports (id BIGINT PRIMARY KEY AUTO_INCREMENT, base_url VARCHAR(500), study_id VARCHAR(255), sample_list_id VARCHAR(255), molecular_profile_id VARCHAR(255), import_status VARCHAR(128), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS reports (id BIGINT PRIMARY KEY AUTO_INCREMENT, report_type VARCHAR(128), path VARCHAR(500), review_status VARCHAR(128), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS human_reviews (id BIGINT PRIMARY KEY AUTO_INCREMENT, subject_type VARCHAR(128), subject_id VARCHAR(128), review_status VARCHAR(128), reviewer_note TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS assistant_sessions (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_role VARCHAR(64) NOT NULL,
+  model_name VARCHAR(255),
+  source_type VARCHAR(128),
+  safety_constraints JSON,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_assistant_user_role (user_role)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS user_role_preferences (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  preference_key VARCHAR(128) NOT NULL UNIQUE,
+  user_role VARCHAR(64) NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_role_preference (user_role)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

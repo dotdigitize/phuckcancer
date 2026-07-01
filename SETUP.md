@@ -1,5 +1,9 @@
 # Setup
 
+MAMMAL is required for biomedical cancer interpretation. PhuckCancer can use a local installed MAMMAL package/model or a configured MAMMAL API provider. If neither provider is available, interpretation endpoints fail closed with a clear unavailable error.
+
+MariaDB/MySQL is the database for demo persistence. SQLite is not used. Ollama is optional for local LLM explanations. The cBioPortal connector is optional for external cancer genomics import.
+
 Backend:
 
 ```bash
@@ -8,7 +12,7 @@ source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 python -m pytest
-uvicorn app.main:app --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8717 --reload
 ```
 
 Frontend:
@@ -19,7 +23,37 @@ npm run build
 npm run dev
 ```
 
-Optional MariaDB:
+The frontend is available at:
+
+```text
+http://SERVER-IP:5179
+```
+
+MAMMAL local provider:
+
+```bash
+pip install biomed-multi-alignment[examples]
+```
+
+or:
+
+```bash
+git clone https://github.com/BiomedSciAI/biomed-multi-alignment.git
+pip install -e ./biomed-multi-alignment[examples]
+```
+
+MAMMAL API provider:
+
+```env
+MAMMAL_REQUIRED=true
+MAMMAL_PROVIDER=api
+MAMMAL_API_BASE_URL=http://localhost:9000
+MAMMAL_API_TOKEN=
+MAMMAL_API_INTERPRET_PATH=/v1/interpret
+MAMMAL_API_HEALTH_PATH=/health
+```
+
+MariaDB:
 
 ```bash
 sudo apt install mariadb-server mariadb-client
@@ -44,20 +78,7 @@ Optional Ollama:
 ollama pull gemma4:e4b
 ```
 
-Optional MAMMAL:
-
-```bash
-pip install biomed-multi-alignment[examples]
-```
-
-or:
-
-```bash
-git clone https://github.com/BiomedSciAI/biomed-multi-alignment.git
-pip install -e ./biomed-multi-alignment[examples]
-```
-
-Documentation-only loading example:
+Documentation-only MAMMAL loading example:
 
 ```python
 from mammal.model import Mammal
