@@ -58,7 +58,7 @@ Cancer genomics data, report text, molecular evidence, external connector data, 
 
 PhuckCancer includes a cancer evidence portal, genomic alteration matrix, cancer pathway explorer, MAMMAL biomedical AI engine, local LLM patient and family assistant, evidence auditing, clinical-trial signal organizer, drug resistance signal watcher, optional cBioPortal data connector, and doctor/family report builder.
 
-The MAMMAL research pipeline includes `app/mammal_engine.py`, `app/mammal_pipeline.py`, `app/mammal_providers.py`, `app/mammal_api_client.py`, `app/mammal_importer.py`, `app/mammal_output_parser.py`, and `app/mammal_claim_extractor.py`. Tests pass without live MAMMAL installed by mocking provider behavior; runtime biomedical interpretation still requires local MAMMAL or a configured MAMMAL API provider.
+The MAMMAL research pipeline includes `app/mammal_engine.py`, `app/mammal_pipeline.py`, `app/mammal_providers.py`, `app/mammal_api_client.py`, `app/mammal_importer.py`, `app/mammal_output_parser.py`, and `app/mammal_claim_extractor.py`. Automated tests use mocked MAMMAL provider behavior. Runtime biomedical interpretation requires a configured MAMMAL provider, either through local MAMMAL, a MAMMAL API, the MAMMAL MCP server, or controlled official MAMMAL task scripts.
 
 ## Why MAMMAL Is Required
 
@@ -72,7 +72,7 @@ The local LLM does not replace MAMMAL. The local LLM explains MAMMAL's structure
 
 ## MAMMAL Provider Modes
 
-PhuckCancer can use MAMMAL in two provider modes:
+PhuckCancer can use MAMMAL through multiple provider modes:
 
 1. Local MAMMAL provider
 
@@ -393,7 +393,7 @@ model = Mammal.from_pretrained("ibm/biomed.omics.bl.sm.ma-ted-458m")
 model.eval()
 ```
 
-If that import path changes upstream, confirm the latest official usage from the MAMMAL repository. The application itself runs tests without live MAMMAL.
+If that import path changes upstream, confirm the latest official usage from the MAMMAL repository. Automated tests may mock MAMMAL provider behavior, but runtime biomedical interpretation requires a configured MAMMAL provider.
 
 ## MariaDB Demo Database
 
