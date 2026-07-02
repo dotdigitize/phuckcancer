@@ -90,6 +90,8 @@ class LocalMammalProvider:
             "available": True,
             "configured": True,
             "model_name": self.settings.mammal_model_name,
+            "base_model_id": self.settings.mammal_base_model_id,
+            "tokenizer_id": self.settings.mammal_base_tokenizer_id,
             "device": self.device,
         }
 
@@ -109,6 +111,8 @@ class LocalMammalProvider:
             raise MammalInvalidOutputError("Local MAMMAL output must be a structured object.")
         result.setdefault("provider", "local")
         result.setdefault("model_name", self.settings.mammal_model_name)
+        result.setdefault("base_model_id", self.settings.mammal_base_model_id)
+        result.setdefault("tokenizer_id", self.settings.mammal_base_tokenizer_id)
         result.setdefault("device", self.device)
         return result
 
@@ -138,6 +142,7 @@ class ApiMammalProvider:
             raise MammalApiError("MAMMAL API returned invalid JSON.") from exc
         result.setdefault("provider", "api")
         result.setdefault("model_name", self.settings.mammal_model_name)
+        result.setdefault("base_model_id", self.settings.mammal_base_model_id)
         return result
 
 
@@ -150,7 +155,7 @@ class McpHttpMammalProvider:
             raise MammalConfigurationError("MAMMAL_MCP_BASE_URL is required when MAMMAL_PROVIDER=mcp_http.")
 
     def status(self) -> dict:
-        return {"provider": "mcp_http", "configured": True, "base_url": self.settings.mammal_mcp_base_url}
+        return {"provider": "mcp_http", "configured": True, "base_url": self.settings.mammal_mcp_base_url, "hf_space_url": self.settings.mammal_hf_space_url}
 
     def interpret(self, payload: dict) -> dict:
         raise MammalUnsupportedOperationError("Use official MAMMAL task endpoints for MCP task calls.")
@@ -169,6 +174,7 @@ class OfficialScriptMammalProvider:
             "provider": "official_script",
             "configured": True,
             "repo_path": self.settings.mammal_repo_path,
+            "official_repo_url": self.settings.mammal_official_repo_url,
             "timeout_seconds": self.settings.mammal_script_timeout_seconds,
         }
 

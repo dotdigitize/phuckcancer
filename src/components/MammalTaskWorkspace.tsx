@@ -58,6 +58,7 @@ export default function MammalTaskWorkspace({ selectedRole }: Props) {
           <h2 className="text-xl font-semibold text-clinical-navy">Official MAMMAL Task Workspace</h2>
           <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">
             MAMMAL needs structured biological inputs. PhuckCancer will not invent SMILES strings, protein sequences, gene-expression profiles, h5ad files, model checkpoints, or normalization values.
+            Some downstream tasks require fine-tuned checkpoints and matching tokenizers; the base MAMMAL model alone may not be sufficient for every task.
           </p>
         </div>
         <span className="badge border-slate-300 text-slate-700">{taskInfo?.tasks?.length || 0} official task types</span>

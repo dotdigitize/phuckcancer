@@ -42,6 +42,18 @@ git clone https://github.com/BiomedSciAI/biomed-multi-alignment.git
 pip install -e ./biomed-multi-alignment[examples]
 ```
 
+Configure the base model and tokenizer:
+
+```env
+MAMMAL_BASE_MODEL_ID=ibm/biomed.omics.bl.sm.ma-ted-458m
+MAMMAL_BASE_TOKENIZER_ID=ibm/biomed.omics.bl.sm.ma-ted-458m
+MAMMAL_HF_FINETUNED_MODELS_URL=https://huggingface.co/models?other=base_model:finetune:ibm-research/biomed.omics.bl.sm.ma-ted-458m
+MAMMAL_HF_SPACE_URL=https://huggingface.co/spaces/ibm/biomed-multi-alignment
+MAMMAL_OFFICIAL_REPO_URL=https://github.com/BiomedSciAI/biomed-multi-alignment
+```
+
+The base MAMMAL model and tokenizer are not the same thing as a fine-tuned downstream task checkpoint. For tasks such as cell-line drug response, drug-target binding, drug carcinogenicity, and protein solubility, configure either a local fine-tuned checkpoint path or a provider/Hugging Face checkpoint ID supported by your runner.
+
 MAMMAL API provider:
 
 ```env
@@ -80,6 +92,14 @@ MAMMAL_DTI_NORM_Y_STD=
 MAMMAL_CARCINOGENICITY_MODEL_PATH=/opt/mammal-models/carcinogenicity
 MAMMAL_PROTEIN_SOLUBILITY_MODEL_PATH=/opt/mammal-models/protein_solubility
 ```
+
+If using Hugging Face model IDs instead of local files, select compatible fine-tuned checkpoints and tokenizers from:
+
+```text
+https://huggingface.co/models?other=base_model:finetune:ibm-research/biomed.omics.bl.sm.ma-ted-458m
+```
+
+Then configure your local/API/MCP runner to resolve those IDs. PhuckCancer records `checkpoint_model_id` in the MAMMAL model registry, while official-script execution still requires a validated local `checkpoint_path`/`model_path`.
 
 Run MAMMAL MCP server when using MCP-backed tasks:
 

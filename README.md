@@ -95,6 +95,31 @@ MAMMAL_API_HEALTH_PATH=/health
 
 PhuckCancer also supports `mcp_http` for MAMMAL MCP server tasks and `official_script` for controlled calls into the official BiomedSciAI MAMMAL repository examples. `official_script` uses whitelisted task scripts, argument-list subprocess calls, timeouts, captured stdout/stderr, and configured model path allowlists.
 
+## MAMMAL Code, Weights, Tokenizers, and Fine-Tuned Checkpoints
+
+PhuckCancer follows the official MAMMAL availability model. The MAMMAL architecture, fine-tuning framework, and end-to-end examples are available in the official BiomedSciAI repository. The base pretrained model weights and associated tokenizer are hosted on Hugging Face. Selected fine-tuned task checkpoints and tokenizers may also be available through Hugging Face, and the MAMMAL Hugging Face Space can be used to explore supported workflows.
+
+PhuckCancer separates these concepts:
+
+- Base model: the pretrained MAMMAL biomedical foundation model.
+- Tokenizer: the associated MAMMAL modular tokenizer.
+- Fine-tuned checkpoint: a task-specific model used for downstream prediction or generation.
+- Task runner: the execution path, such as local MAMMAL, MAMMAL API, MAMMAL MCP HTTP, or controlled official scripts.
+
+Official MAMMAL repository:
+https://github.com/BiomedSciAI/biomed-multi-alignment
+
+Base pretrained model and tokenizer:
+https://huggingface.co/ibm/biomed.omics.bl.sm.ma-ted-458m
+
+Fine-tuned checkpoints and tokenizers:
+https://huggingface.co/models?other=base_model:finetune:ibm-research/biomed.omics.bl.sm.ma-ted-458m
+
+Interactive Hugging Face Space:
+https://huggingface.co/spaces/ibm/biomed-multi-alignment
+
+Some PhuckCancer tasks require a fine-tuned checkpoint path or Hugging Face checkpoint ID. PhuckCancer should not assume the base MAMMAL model alone can run every downstream task.
+
 ## Official MAMMAL Task Integration
 
 PhuckCancer uses the official MAMMAL repository task examples as the foundation for its biomedical task layer. MAMMAL is not used as a general cancer chatbot. It is used through task-specific workflows such as cell-line drug response prediction, drug-target interaction, drug carcinogenicity prediction, protein-protein interaction, protein solubility, and MCP-exposed MAMMAL tasks.
@@ -102,6 +127,11 @@ PhuckCancer uses the official MAMMAL repository task examples as the foundation 
 Provider configuration:
 
 ```env
+MAMMAL_BASE_MODEL_ID=ibm/biomed.omics.bl.sm.ma-ted-458m
+MAMMAL_BASE_TOKENIZER_ID=ibm/biomed.omics.bl.sm.ma-ted-458m
+MAMMAL_HF_FINETUNED_MODELS_URL=https://huggingface.co/models?other=base_model:finetune:ibm-research/biomed.omics.bl.sm.ma-ted-458m
+MAMMAL_HF_SPACE_URL=https://huggingface.co/spaces/ibm/biomed-multi-alignment
+MAMMAL_OFFICIAL_REPO_URL=https://github.com/BiomedSciAI/biomed-multi-alignment
 MAMMAL_PROVIDER=official_script
 MAMMAL_REPO_PATH=/opt/biomed-multi-alignment
 MAMMAL_SCRIPT_TIMEOUT_SECONDS=300
@@ -369,7 +399,11 @@ MAMMAL stands for Molecular Aligned Multi-Modal Architecture and Language.
 
 Official code: https://github.com/BiomedSciAI/biomed-multi-alignment
 
-Hugging Face model: https://huggingface.co/ibm-research/biomed.omics.bl.sm.ma-ted-458m
+Hugging Face base model and tokenizer: https://huggingface.co/ibm/biomed.omics.bl.sm.ma-ted-458m
+
+Hugging Face fine-tuned checkpoint index: https://huggingface.co/models?other=base_model:finetune:ibm-research/biomed.omics.bl.sm.ma-ted-458m
+
+Interactive Hugging Face Space: https://huggingface.co/spaces/ibm/biomed-multi-alignment
 
 Paper: https://arxiv.org/abs/2410.22367
 

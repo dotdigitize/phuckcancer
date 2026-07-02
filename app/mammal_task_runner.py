@@ -36,29 +36,38 @@ def _has_text(value: Any) -> bool:
     return bool(str(value).strip()) if value is not None else False
 
 
+def _checkpoint_path(payload: dict[str, Any]) -> Any:
+    return payload.get("checkpoint_path") or payload.get("model_path")
+
+
 def validate_task_inputs(task_type: str, payload: dict[str, Any]) -> None:
     missing: list[str] = []
     if task_type == "cell_line_drug_response":
-        for field in ("model_path", "drug_smiles", "drug_name"):
+        for field in ("drug_smiles", "drug_name"):
             if not _has_text(payload.get(field)):
                 missing.append(field)
+        if not _has_text(_checkpoint_path(payload)):
+            missing.append("model_path")
         if not (_has_text(payload.get("cell_line_name")) or _has_text(payload.get("cell_line_h5ad_file"))):
             missing.append("cell_line_name_or_cell_line_h5ad_file")
     elif task_type == "drug_target_interaction":
-        for field in ("model_path", "target_protein_sequence", "drug_smiles", "norm_y_mean", "norm_y_std"):
+        for field in ("target_protein_sequence", "drug_smiles", "norm_y_mean", "norm_y_std"):
             if not _has_text(payload.get(field)):
                 missing.append(field)
+        if not _has_text(_checkpoint_path(payload)):
+            missing.append("model_path")
     elif task_type == "drug_carcinogenicity":
-        for field in ("model_path", "drug_smiles"):
-            if not _has_text(payload.get(field)):
-                missing.append(field)
+        if not _has_text(_checkpoint_path(payload)):
+            missing.append("model_path")
+        if not _has_text(payload.get("drug_smiles")):
+            missing.append("drug_smiles")
     elif task_type == "protein_protein_interaction":
         if not (_has_text(payload.get("protein_a_name")) or _has_text(payload.get("protein_a_sequence"))):
             missing.append("protein_a_name_or_sequence")
         if not (_has_text(payload.get("protein_b_name")) or _has_text(payload.get("protein_b_sequence"))):
             missing.append("protein_b_name_or_sequence")
     elif task_type == "protein_solubility":
-        if not _has_text(payload.get("model_path")):
+        if not _has_text(_checkpoint_path(payload)):
             missing.append("model_path")
         if not (_has_text(payload.get("protein_name")) or _has_text(payload.get("protein_sequence"))):
             missing.append("protein_name_or_sequence")
@@ -88,7 +97,7 @@ def _script_path(task_type: str, settings: Settings) -> Path:
 def _official_script_args(task_type: str, payload: dict[str, Any], settings: Settings) -> list[str]:
     script = _script_path(task_type, settings)
     if task_type in SCRIPT_TASKS:
-        payload = {**payload, "model_path": validate_model_path(payload.get("model_path"), settings)}
+        payload = {**payload, "model_path": validate_model_path(_checkpoint_path(payload), settings)}
     if task_type == "cell_line_drug_response":
         args = ["python", str(script), "--model_path", payload["model_path"]]
         if _has_text(payload.get("cell_line_h5ad_file")):

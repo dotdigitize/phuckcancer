@@ -117,9 +117,16 @@ class MammalModelRegistryEntry(BaseModel):
     id: int | None = None
     task_type: MammalOfficialTaskType
     provider: MammalProviderMode = "official_script"
+    base_model_id: str | None = None
+    tokenizer_id: str | None = None
+    checkpoint_source: str | None = None
+    checkpoint_model_id: str | None = None
+    checkpoint_path: str | None = None
     model_path: str | None = None
     norm_y_mean: float | None = None
     norm_y_std: float | None = None
+    official_example_script: str | None = None
+    hf_model_url: str | None = None
     enabled: bool = True
     notes: str | None = None
     created_at: str | None = None

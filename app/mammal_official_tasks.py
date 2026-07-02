@@ -21,6 +21,8 @@ class OfficialMammalTask:
     required_inputs: tuple[str, ...]
     optional_inputs: tuple[str, ...]
     script_relative_path: str | None = None
+    requires_fine_tuned_checkpoint: bool = False
+    requires_normalization: bool = False
 
 
 OFFICIAL_MAMMAL_TASKS: dict[str, OfficialMammalTask] = {
@@ -31,6 +33,7 @@ OFFICIAL_MAMMAL_TASKS: dict[str, OfficialMammalTask] = {
         required_inputs=("model_path", "drug_smiles", "drug_name", "cell_line_name_or_cell_line_h5ad_file"),
         optional_inputs=("cell_line_name", "cell_line_h5ad_file"),
         script_relative_path="mammal/examples/cell_line_drug_response/main_infer.py",
+        requires_fine_tuned_checkpoint=True,
     ),
     "drug_target_interaction": OfficialMammalTask(
         task_type="drug_target_interaction",
@@ -39,6 +42,8 @@ OFFICIAL_MAMMAL_TASKS: dict[str, OfficialMammalTask] = {
         required_inputs=("model_path", "target_protein_sequence", "drug_smiles", "norm_y_mean", "norm_y_std"),
         optional_inputs=("target_name", "drug_name", "cancer_context"),
         script_relative_path="mammal/examples/dti_bindingdb_kd/main_infer.py",
+        requires_fine_tuned_checkpoint=True,
+        requires_normalization=True,
     ),
     "drug_carcinogenicity": OfficialMammalTask(
         task_type="drug_carcinogenicity",
@@ -47,6 +52,7 @@ OFFICIAL_MAMMAL_TASKS: dict[str, OfficialMammalTask] = {
         required_inputs=("model_path", "drug_smiles"),
         optional_inputs=("drug_name",),
         script_relative_path="mammal/examples/carcinogenicity/main_infer.py",
+        requires_fine_tuned_checkpoint=True,
     ),
     "protein_protein_interaction": OfficialMammalTask(
         task_type="protein_protein_interaction",
@@ -62,6 +68,7 @@ OFFICIAL_MAMMAL_TASKS: dict[str, OfficialMammalTask] = {
         required_inputs=("model_path", "protein_name_or_sequence"),
         optional_inputs=("protein_name", "protein_sequence"),
         script_relative_path="mammal/examples/protein_solubility/main_infer.py",
+        requires_fine_tuned_checkpoint=True,
     ),
     "tcr_epitope_binding": OfficialMammalTask(
         task_type="tcr_epitope_binding",
@@ -83,11 +90,15 @@ def official_tasks_payload() -> dict:
                 "required_inputs": list(task.required_inputs),
                 "optional_inputs": list(task.optional_inputs),
                 "script_relative_path": task.script_relative_path,
+                "requires_fine_tuned_checkpoint": task.requires_fine_tuned_checkpoint,
+                "requires_normalization": task.requires_normalization,
             }
             for task in OFFICIAL_MAMMAL_TASKS.values()
         ],
         "warning": (
             "MAMMAL needs structured biological inputs. PhuckCancer will not invent SMILES strings, "
-            "protein sequences, gene-expression profiles, h5ad files, model checkpoints, or normalization values."
+            "protein sequences, gene-expression profiles, h5ad files, model checkpoints, or normalization values. "
+            "Some MAMMAL downstream tasks require fine-tuned checkpoints and matching tokenizers. "
+            "The base MAMMAL model alone may not be sufficient for every task."
         ),
     }

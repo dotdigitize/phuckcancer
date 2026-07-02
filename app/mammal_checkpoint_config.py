@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from app.config import Settings, get_settings
+from app.mammal_official_tasks import OFFICIAL_MAMMAL_TASKS
 from app.mammal_providers import MammalConfigurationError
 
 
@@ -21,3 +22,24 @@ def validate_model_path(model_path: str | None, settings: Settings | None = None
     if not path.exists():
         raise MammalConfigurationError("mammal_model_path_required")
     return str(path)
+
+
+def task_requires_fine_tuned_checkpoint(task_type: str) -> bool:
+    task = OFFICIAL_MAMMAL_TASKS.get(task_type)
+    return bool(task and task.requires_fine_tuned_checkpoint)
+
+
+def task_requires_normalization(task_type: str) -> bool:
+    task = OFFICIAL_MAMMAL_TASKS.get(task_type)
+    return bool(task and task.requires_normalization)
+
+
+def configured_checkpoint_path_for_task(task_type: str, settings: Settings | None = None) -> str:
+    settings = settings or get_settings()
+    paths = {
+        "cell_line_drug_response": settings.mammal_cell_line_drug_response_model_path,
+        "drug_target_interaction": settings.mammal_dti_model_path,
+        "drug_carcinogenicity": settings.mammal_carcinogenicity_model_path,
+        "protein_solubility": settings.mammal_protein_solubility_model_path,
+    }
+    return paths.get(task_type, "")

@@ -21,17 +21,18 @@ Cancer genomics data / cBioPortal connector data / reports / molecular evidence
 Official MAMMAL task pipeline:
 
 ```text
-PhuckCancer UI
+Official MAMMAL repo / Hugging Face base model / fine-tuned checkpoints
+-> PhuckCancer MAMMAL model registry
+-> selected task runner
 -> task-specific structured biological input
--> MAMMAL task router
--> official_script / local / api / mcp_http provider
--> official MAMMAL task inference
--> normalized MAMMAL result
+-> MAMMAL inference
+-> normalized result
 -> evidence audit
 -> role-based local LLM explanation
--> MariaDB task/report history
--> doctor/family/research/system reports
+-> MariaDB history and report export
 ```
+
+The MAMMAL model registry stores the base model ID, tokenizer ID, official repository URL, checkpoint source, Hugging Face checkpoint link, local checkpoint path, provider mode, enablement state, and task-specific normalization values. This prevents PhuckCancer from treating the base pretrained model as a substitute for fine-tuned downstream checkpoints.
 
 PhuckCancer uses MAMMAL in a cancer evidence workflow that is different from a normal chatbot. MAMMAL is not used to write friendly responses directly. It is used as the biomedical reasoning layer for molecular cancer evidence. The local LLM then explains MAMMAL's structured output according to the selected user role.
 

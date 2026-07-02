@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     mammal_required: bool = True
     mammal_provider: str = "local"
     mammal_model_name: str = "ibm/biomed.omics.bl.sm.ma-ted-458m"
+    mammal_base_model_id: str = "ibm/biomed.omics.bl.sm.ma-ted-458m"
+    mammal_base_tokenizer_id: str = "ibm/biomed.omics.bl.sm.ma-ted-458m"
+    mammal_hf_finetuned_models_url: str = "https://huggingface.co/models?other=base_model:finetune:ibm-research/biomed.omics.bl.sm.ma-ted-458m"
+    mammal_hf_space_url: str = "https://huggingface.co/spaces/ibm/biomed-multi-alignment"
+    mammal_official_repo_url: str = "https://github.com/BiomedSciAI/biomed-multi-alignment"
     mammal_device: str = "auto"
     mammal_workdir: str = ""
     mammal_repo_path: str = "/opt/biomed-multi-alignment"
