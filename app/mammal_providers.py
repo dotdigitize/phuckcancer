@@ -32,6 +32,10 @@ class MammalInvalidOutputError(MammalUnavailableError):
     pass
 
 
+class MammalUnsupportedOperationError(MammalUnavailableError):
+    pass
+
+
 class MammalProvider(Protocol):
     provider_name: str
 
@@ -137,10 +141,49 @@ class ApiMammalProvider:
         return result
 
 
+class McpHttpMammalProvider:
+    provider_name = "mcp_http"
+
+    def __init__(self, settings: Settings):
+        self.settings = settings
+        if not settings.mammal_mcp_base_url:
+            raise MammalConfigurationError("MAMMAL_MCP_BASE_URL is required when MAMMAL_PROVIDER=mcp_http.")
+
+    def status(self) -> dict:
+        return {"provider": "mcp_http", "configured": True, "base_url": self.settings.mammal_mcp_base_url}
+
+    def interpret(self, payload: dict) -> dict:
+        raise MammalUnsupportedOperationError("Use official MAMMAL task endpoints for MCP task calls.")
+
+
+class OfficialScriptMammalProvider:
+    provider_name = "official_script"
+
+    def __init__(self, settings: Settings):
+        self.settings = settings
+        if not settings.mammal_repo_path:
+            raise MammalConfigurationError("MAMMAL_REPO_PATH is required when MAMMAL_PROVIDER=official_script.")
+
+    def status(self) -> dict:
+        return {
+            "provider": "official_script",
+            "configured": True,
+            "repo_path": self.settings.mammal_repo_path,
+            "timeout_seconds": self.settings.mammal_script_timeout_seconds,
+        }
+
+    def interpret(self, payload: dict) -> dict:
+        raise MammalUnsupportedOperationError("Use official MAMMAL task endpoints for official script task calls.")
+
+
 def get_mammal_provider(settings: Settings) -> MammalProvider:
     provider = (settings.mammal_provider or "").lower()
     if provider == "local":
         return LocalMammalProvider(settings)
     if provider == "api":
         return ApiMammalProvider(settings)
-    raise MammalConfigurationError("MAMMAL_PROVIDER must be local or api.")
+    if provider == "mcp_http":
+        return McpHttpMammalProvider(settings)
+    if provider == "official_script":
+        return OfficialScriptMammalProvider(settings)
+    raise MammalConfigurationError("MAMMAL_PROVIDER must be local, api, mcp_http, or official_script.")

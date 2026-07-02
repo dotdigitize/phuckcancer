@@ -16,6 +16,17 @@ class Settings(BaseSettings):
     mammal_model_name: str = "ibm/biomed.omics.bl.sm.ma-ted-458m"
     mammal_device: str = "auto"
     mammal_workdir: str = ""
+    mammal_repo_path: str = "/opt/biomed-multi-alignment"
+    mammal_script_timeout_seconds: int = 300
+    mammal_allowed_model_dirs: str = "/opt/mammal-models,/home/editor/mammal-models"
+    mammal_cell_line_drug_response_model_path: str = ""
+    mammal_dti_model_path: str = ""
+    mammal_dti_norm_y_mean: str = ""
+    mammal_dti_norm_y_std: str = ""
+    mammal_carcinogenicity_model_path: str = ""
+    mammal_protein_solubility_model_path: str = ""
+    mammal_mcp_base_url: str = "http://127.0.0.1:8001"
+    mammal_mcp_timeout_seconds: int = 90
     mammal_api_base_url: str = ""
     mammal_api_token: str = ""
     mammal_api_timeout_seconds: int = 60

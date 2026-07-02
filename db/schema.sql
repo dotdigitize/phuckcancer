@@ -53,6 +53,64 @@ CREATE TABLE IF NOT EXISTS mammal_interpretations (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_mammal_provider (provider)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS mammal_model_registry (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  task_type VARCHAR(128) NOT NULL,
+  provider VARCHAR(32) NOT NULL,
+  model_path VARCHAR(1000),
+  norm_y_mean DOUBLE,
+  norm_y_std DOUBLE,
+  enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_mammal_model_registry_task (task_type),
+  INDEX idx_mammal_model_registry_provider (provider)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS mammal_task_runs (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  task_type VARCHAR(128) NOT NULL,
+  provider VARCHAR(32) NOT NULL,
+  status VARCHAR(64) NOT NULL,
+  model_registry_id BIGINT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_mammal_task_runs_task (task_type),
+  INDEX idx_mammal_task_runs_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS mammal_task_inputs (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  task_run_id BIGINT NOT NULL,
+  input_json JSON NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_mammal_task_inputs_run (task_run_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS mammal_task_outputs (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  task_run_id BIGINT NOT NULL,
+  output_json JSON NOT NULL,
+  raw_mammal_output JSON,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_mammal_task_outputs_run (task_run_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS mammal_task_errors (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  task_run_id BIGINT,
+  error_code VARCHAR(128) NOT NULL,
+  message TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_mammal_task_errors_code (error_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS mammal_uploaded_files (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  task_type VARCHAR(128),
+  original_filename VARCHAR(500),
+  stored_path VARCHAR(1000) NOT NULL,
+  content_type VARCHAR(255),
+  file_size_bytes BIGINT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_mammal_uploaded_files_task (task_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS extracted_claims (id BIGINT PRIMARY KEY AUTO_INCREMENT, claim_id VARCHAR(128), claim_text TEXT NOT NULL, gene VARCHAR(64), pathway VARCHAR(255), source VARCHAR(255)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS evidence_matches (id BIGINT PRIMARY KEY AUTO_INCREMENT, claim_id VARCHAR(128), evidence_id VARCHAR(128), support_status VARCHAR(64), support_score DECIMAL(5,2), rationale TEXT) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS risk_flags (id BIGINT PRIMARY KEY AUTO_INCREMENT, flag VARCHAR(128) NOT NULL, claim_id VARCHAR(128), note TEXT) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -6,6 +6,7 @@ import MetricCards from './components/MetricCards';
 import GenomicAlterationMatrix from './components/GenomicAlterationMatrix';
 import PathwayExplorer from './components/PathwayExplorer';
 import MammalEnginePanel from './components/MammalEnginePanel';
+import MammalTaskWorkspace from './components/MammalTaskWorkspace';
 import EvidenceAuditPanel from './components/EvidenceAuditPanel';
 import LocalAssistantPanel from './components/LocalAssistantPanel';
 import TrialSignalPanel from './components/TrialSignalPanel';
@@ -49,6 +50,7 @@ export default function App() {
           <PathwayExplorer />
           <MammalEnginePanel status={systemStatus} />
         </div>
+        <MammalTaskWorkspace selectedRole={selectedRole} />
         <EvidenceAuditPanel />
         <LocalAssistantPanel selectedRole={selectedRole} />
         <div className="grid gap-6 lg:grid-cols-2">

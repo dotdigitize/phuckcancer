@@ -53,6 +53,59 @@ MAMMAL_API_INTERPRET_PATH=/v1/interpret
 MAMMAL_API_HEALTH_PATH=/health
 ```
 
+Official MAMMAL task scripts:
+
+```bash
+sudo mkdir -p /opt
+cd /opt
+sudo git clone https://github.com/BiomedSciAI/biomed-multi-alignment.git
+cd biomed-multi-alignment
+python -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -e ".[examples]"
+```
+
+Configure PhuckCancer to call the official examples:
+
+```env
+MAMMAL_PROVIDER=official_script
+MAMMAL_REPO_PATH=/opt/biomed-multi-alignment
+MAMMAL_SCRIPT_TIMEOUT_SECONDS=300
+MAMMAL_ALLOWED_MODEL_DIRS=/opt/mammal-models,/home/editor/mammal-models
+MAMMAL_CELL_LINE_DRUG_RESPONSE_MODEL_PATH=/opt/mammal-models/cell_line_drug_response/best_epoch.ckpt
+MAMMAL_DTI_MODEL_PATH=/opt/mammal-models/dti_bindingdb_kd
+MAMMAL_DTI_NORM_Y_MEAN=
+MAMMAL_DTI_NORM_Y_STD=
+MAMMAL_CARCINOGENICITY_MODEL_PATH=/opt/mammal-models/carcinogenicity
+MAMMAL_PROTEIN_SOLUBILITY_MODEL_PATH=/opt/mammal-models/protein_solubility
+```
+
+Run MAMMAL MCP server when using MCP-backed tasks:
+
+```bash
+cd /opt/biomed-multi-alignment
+source .venv/bin/activate
+python -m mammal.mcp.server --host 127.0.0.1 --port 8001
+```
+
+```env
+MAMMAL_MCP_BASE_URL=http://127.0.0.1:8001
+MAMMAL_MCP_TIMEOUT_SECONDS=90
+```
+
+Run PhuckCancer backend on port 8717:
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8717 --reload
+```
+
+Run frontend on port 5179:
+
+```bash
+npm run dev
+```
+
 MariaDB:
 
 ```bash

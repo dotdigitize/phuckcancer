@@ -93,6 +93,46 @@ MAMMAL_API_INTERPRET_PATH=/v1/interpret
 MAMMAL_API_HEALTH_PATH=/health
 ```
 
+PhuckCancer also supports `mcp_http` for MAMMAL MCP server tasks and `official_script` for controlled calls into the official BiomedSciAI MAMMAL repository examples. `official_script` uses whitelisted task scripts, argument-list subprocess calls, timeouts, captured stdout/stderr, and configured model path allowlists.
+
+## Official MAMMAL Task Integration
+
+PhuckCancer uses the official MAMMAL repository task examples as the foundation for its biomedical task layer. MAMMAL is not used as a general cancer chatbot. It is used through task-specific workflows such as cell-line drug response prediction, drug-target interaction, drug carcinogenicity prediction, protein-protein interaction, protein solubility, and MCP-exposed MAMMAL tasks.
+
+Provider configuration:
+
+```env
+MAMMAL_PROVIDER=official_script
+MAMMAL_REPO_PATH=/opt/biomed-multi-alignment
+MAMMAL_SCRIPT_TIMEOUT_SECONDS=300
+MAMMAL_ALLOWED_MODEL_DIRS=/opt/mammal-models,/home/editor/mammal-models
+
+MAMMAL_CELL_LINE_DRUG_RESPONSE_MODEL_PATH=
+MAMMAL_DTI_MODEL_PATH=
+MAMMAL_DTI_NORM_Y_MEAN=
+MAMMAL_DTI_NORM_Y_STD=
+MAMMAL_CARCINOGENICITY_MODEL_PATH=
+MAMMAL_PROTEIN_SOLUBILITY_MODEL_PATH=
+
+MAMMAL_MCP_BASE_URL=http://127.0.0.1:8001
+MAMMAL_MCP_TIMEOUT_SECONDS=90
+```
+
+## Most Important Cancer Task: Cell-Line Drug Response
+
+This task predicts drug response signals for cancer cell-line and drug combinations. It uses a drug SMILES string together with a cancer cell-line gene-expression profile or supported GDSC cell-line name. This makes it one of the most important MAMMAL workflows for PhuckCancer.
+
+## Required Structured Inputs
+
+PhuckCancer does not invent biological inputs. MAMMAL tasks require structured data:
+
+- Drug response: model checkpoint, cell-line name or h5ad file, drug SMILES, drug name.
+- Drug-target interaction: model checkpoint, target protein sequence, drug SMILES, norm_y_mean, norm_y_std.
+- Drug carcinogenicity: model checkpoint and drug SMILES.
+- Protein interaction: two protein names or sequences.
+- Protein solubility: protein name or sequence and model checkpoint if using local fine-tuned inference.
+- TCR-epitope binding: TCR sequence and epitope sequence.
+
 ## Role-Based Local LLM Explanations
 
 PhuckCancer asks what type of user is using the system before generating local LLM explanations.

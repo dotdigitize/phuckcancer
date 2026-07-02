@@ -18,6 +18,21 @@ Cancer genomics data / cBioPortal connector data / reports / molecular evidence
 -> doctor/family/research/system reports
 ```
 
+Official MAMMAL task pipeline:
+
+```text
+PhuckCancer UI
+-> task-specific structured biological input
+-> MAMMAL task router
+-> official_script / local / api / mcp_http provider
+-> official MAMMAL task inference
+-> normalized MAMMAL result
+-> evidence audit
+-> role-based local LLM explanation
+-> MariaDB task/report history
+-> doctor/family/research/system reports
+```
+
 PhuckCancer uses MAMMAL in a cancer evidence workflow that is different from a normal chatbot. MAMMAL is not used to write friendly responses directly. It is used as the biomedical reasoning layer for molecular cancer evidence. The local LLM then explains MAMMAL's structured output according to the selected user role.
 
 If the local MAMMAL package/model is unavailable and no MAMMAL API provider is configured, biomedical interpretation stops with a clear unavailable error. The application may still use JSON sample fixtures for layout, parser tests, cBioPortal normalization tests, and documentation examples.

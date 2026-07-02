@@ -48,11 +48,22 @@ class PathwayFinding(BaseModel):
     human_review_recommendation: str
 
 
+MammalProviderMode = Literal["local", "api", "mcp_http", "official_script"]
+MammalOfficialTaskType = Literal[
+    "cell_line_drug_response",
+    "drug_target_interaction",
+    "drug_carcinogenicity",
+    "protein_protein_interaction",
+    "protein_solubility",
+    "tcr_epitope_binding",
+]
+
+
 class MammalInterpretation(BaseModel):
     interpretation_id: str
     engine: str = "MAMMAL biomedical reasoning layer"
     model_name: str
-    provider: Literal["local", "api"]
+    provider: MammalProviderMode
     biological_interpretation: str
     molecular_signal: str
     pathway_context: str
@@ -100,6 +111,68 @@ class AssistantRequest(BaseModel):
     risk_flags: list[str] = Field(default_factory=list)
     source_notes: list[str] = Field(default_factory=list)
     safety_constraints: list[str] = Field(default_factory=list)
+
+
+class MammalModelRegistryEntry(BaseModel):
+    id: int | None = None
+    task_type: MammalOfficialTaskType
+    provider: MammalProviderMode = "official_script"
+    model_path: str | None = None
+    norm_y_mean: float | None = None
+    norm_y_std: float | None = None
+    enabled: bool = True
+    notes: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class CellLineDrugResponseRequest(BaseModel):
+    model_path: str | None = None
+    cell_line_name: str | None = None
+    cell_line_h5ad_file: str | None = None
+    drug_smiles: str | None = None
+    drug_name: str | None = None
+
+
+class DrugTargetInteractionRequest(BaseModel):
+    model_path: str | None = None
+    target_protein_sequence: str | None = None
+    drug_smiles: str | None = None
+    norm_y_mean: float | None = None
+    norm_y_std: float | None = None
+    target_name: str | None = None
+    drug_name: str | None = None
+    cancer_context: str | None = None
+
+
+class DrugCarcinogenicityRequest(BaseModel):
+    model_path: str | None = None
+    drug_smiles: str | None = None
+    drug_name: str | None = None
+
+
+class ProteinProteinInteractionRequest(BaseModel):
+    protein_a_sequence: str | None = None
+    protein_a_name: str | None = None
+    protein_b_sequence: str | None = None
+    protein_b_name: str | None = None
+
+
+class ProteinSolubilityRequest(BaseModel):
+    model_path: str | None = None
+    protein_sequence: str | None = None
+    protein_name: str | None = None
+
+
+class TcrEpitopeBindingRequest(BaseModel):
+    tcr_sequence: str | None = None
+    epitope_sequence: str | None = None
+    cancer_context: str | None = None
+
+
+class MammalTaskExplainRequest(BaseModel):
+    user_role: UserRole | None = None
+    task_result: dict[str, Any] | None = None
 
 
 class UserRoleRequest(BaseModel):

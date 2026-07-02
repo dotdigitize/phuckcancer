@@ -20,11 +20,11 @@ export default function MammalEnginePanel({ status }: Props) {
       </dl>
       {!available ? (
         <div className="mt-4 border border-clinical-amber bg-amber-50 p-3 text-sm font-semibold text-clinical-amber" style={{ borderRadius: 8 }}>
-          MAMMAL is required for biomedical interpretation. Configure local MAMMAL or a MAMMAL API provider before running cancer evidence analysis.
+          MAMMAL is required for biomedical interpretation. Configure local, API, MCP, or official-script MAMMAL providers before running task-specific analysis.
         </div>
       ) : null}
       <p className="mt-4 text-sm leading-6 text-slate-700">
-        PhuckCancer applies MAMMAL in a cancer evidence workflow, then audits support, uncertainty, risk flags, and review questions for qualified human review.
+        PhuckCancer uses MAMMAL as a structured biomedical task engine. The local LLM explains completed MAMMAL task outputs for the selected role and must not invent missing biomedical results.
       </p>
     </section>
   );

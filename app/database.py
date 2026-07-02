@@ -1,6 +1,16 @@
 from app.config import get_settings
 
 
+MAMMAL_TABLES = [
+    "mammal_model_registry",
+    "mammal_task_runs",
+    "mammal_task_inputs",
+    "mammal_task_outputs",
+    "mammal_task_errors",
+    "mammal_uploaded_files",
+]
+
+
 def database_status() -> dict:
     settings = get_settings()
     base = {
@@ -10,6 +20,7 @@ def database_status() -> dict:
         "host": settings.database_host,
         "port": settings.database_port,
         "database": settings.database_name,
+        "mammal_tables": MAMMAL_TABLES,
     }
     if not settings.enable_database:
         return {**base, "available": False, "mode": "disabled_local_fixture_mode"}
