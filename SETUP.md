@@ -145,6 +145,34 @@ mysql -u phuckcancer_user -p phuckcancer_demo < db/schema.sql
 mysql -u phuckcancer_user -p phuckcancer_demo < db/seed_cancer_demo.sql
 ```
 
+## Drug Evidence Workspace Setup
+
+MariaDB seed data creates synthetic drug, target, and cancer context fixtures for the Drug Evidence Workspace. These fixtures are marked as synthetic research fixtures and do not contain real patient data.
+
+Drug comparison workflows require configured MAMMAL providers. The workspace can prepare comparison jobs without all model files, but task execution fails closed with clear missing structured data or MAMMAL unavailable errors until the required provider and checkpoint settings are configured.
+
+Cell-line drug response requires a configured cell-line drug response checkpoint:
+
+```env
+MAMMAL_CELL_LINE_DRUG_RESPONSE_MODEL_PATH=/opt/mammal-models/cell_line_drug_response/best_epoch.ckpt
+```
+
+Drug-target interaction requires a DTI checkpoint plus normalization values:
+
+```env
+MAMMAL_DTI_MODEL_PATH=/opt/mammal-models/dti_bindingdb_kd
+MAMMAL_DTI_NORM_Y_MEAN=
+MAMMAL_DTI_NORM_Y_STD=
+```
+
+Drug carcinogenicity requires a carcinogenicity checkpoint:
+
+```env
+MAMMAL_CARCINOGENICITY_MODEL_PATH=/opt/mammal-models/carcinogenicity
+```
+
+Frontend runs on port 5179. Backend runs on port 8717.
+
 Optional Ollama:
 
 ```bash

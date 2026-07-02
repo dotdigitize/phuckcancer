@@ -7,6 +7,7 @@ import GenomicAlterationMatrix from './components/GenomicAlterationMatrix';
 import PathwayExplorer from './components/PathwayExplorer';
 import MammalEnginePanel from './components/MammalEnginePanel';
 import MammalTaskWorkspace from './components/MammalTaskWorkspace';
+import DrugEvidenceWorkspace from './components/DrugEvidenceWorkspace';
 import EvidenceAuditPanel from './components/EvidenceAuditPanel';
 import LocalAssistantPanel from './components/LocalAssistantPanel';
 import TrialSignalPanel from './components/TrialSignalPanel';
@@ -50,6 +51,7 @@ export default function App() {
           <PathwayExplorer />
           <MammalEnginePanel status={systemStatus} />
         </div>
+        <DrugEvidenceWorkspace selectedRole={selectedRole} systemStatus={systemStatus} />
         <MammalTaskWorkspace selectedRole={selectedRole} />
         <EvidenceAuditPanel />
         <LocalAssistantPanel selectedRole={selectedRole} />

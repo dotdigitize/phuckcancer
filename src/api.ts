@@ -8,3 +8,41 @@ export const roleLabels: Record<UserRole, string> = {
   cancer_researcher: 'Cancer researcher',
   data_engineer: 'Data engineer or system administrator'
 };
+
+export type DrugRecord = {
+  id: number;
+  drug_name: string;
+  brand_names?: string[];
+  drug_class?: string;
+  mechanism_summary?: string;
+  smiles?: string;
+  known_targets?: string[];
+  cancer_contexts?: string[];
+  resistance_notes?: string;
+  trial_notes?: string;
+  evidence_notes?: string;
+  source_label?: string;
+  synthetic_fixture?: boolean;
+};
+
+export type DrugTargetRecord = {
+  id: number;
+  target_name: string;
+  gene_symbol?: string;
+  protein_name?: string;
+  protein_sequence?: string;
+  pathway?: string;
+  cancer_context?: string;
+  notes?: string;
+  synthetic_fixture?: boolean;
+};
+
+export type CancerContextRecord = {
+  id: number;
+  cancer_type: string;
+  subtype?: string;
+  biomarker?: string;
+  pathway?: string;
+  notes?: string;
+  synthetic_fixture?: boolean;
+};

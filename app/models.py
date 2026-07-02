@@ -3,6 +3,8 @@ from pydantic import BaseModel, Field
 
 SupportStatus = Literal["supported", "partially_supported", "unsupported", "contradicted", "missing_evidence", "needs_human_review"]
 ReviewStatus = Literal["pending", "needs_human_review", "reviewed", "escalated"]
+DrugComparisonTaskType = Literal["cell_line_drug_response", "drug_target_interaction", "drug_carcinogenicity", "protein_protein_interaction"]
+ReviewPriority = Literal["high_review_priority", "medium_review_priority", "low_review_priority", "insufficient_data"]
 
 
 class GenomicAlteration(BaseModel):
@@ -191,3 +193,82 @@ class ReportBundle(BaseModel):
     family_summary_markdown: str
     audit_json: dict[str, Any]
     output_paths: dict[str, str]
+
+
+class DrugLibraryRecord(BaseModel):
+    id: int | None = None
+    drug_name: str
+    brand_names: list[str] = Field(default_factory=list)
+    drug_class: str | None = None
+    mechanism_summary: str | None = None
+    smiles: str | None = None
+    known_targets: list[str] = Field(default_factory=list)
+    cancer_contexts: list[str] = Field(default_factory=list)
+    resistance_notes: str | None = None
+    trial_notes: str | None = None
+    evidence_notes: str | None = None
+    source_label: str = "Synthetic research fixture"
+    source_url: str | None = None
+    synthetic_fixture: bool = True
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class DrugTargetRecord(BaseModel):
+    id: int | None = None
+    target_name: str
+    gene_symbol: str | None = None
+    protein_name: str | None = None
+    protein_sequence: str | None = None
+    pathway: str | None = None
+    cancer_context: str | None = None
+    notes: str | None = None
+    source_label: str = "Synthetic research fixture"
+    synthetic_fixture: bool = True
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class CancerContextRecord(BaseModel):
+    id: int | None = None
+    cancer_type: str
+    subtype: str | None = None
+    biomarker: str | None = None
+    pathway: str | None = None
+    notes: str | None = None
+    synthetic_fixture: bool = True
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class DrugComparisonCreateRequest(BaseModel):
+    comparison_name: str
+    drug_ids: list[int] = Field(default_factory=list)
+    target_ids: list[int] = Field(default_factory=list)
+    cancer_context_ids: list[int] = Field(default_factory=list)
+    task_types: list[DrugComparisonTaskType] = Field(default_factory=list)
+    cell_line_names: list[str] = Field(default_factory=list)
+    h5ad_file_refs: list[str] = Field(default_factory=list)
+    notes: str | None = None
+
+
+class DrugComparisonRunRequest(BaseModel):
+    task_types: list[DrugComparisonTaskType] | None = None
+    cell_line_names: list[str] | None = None
+    h5ad_file_refs: list[str] | None = None
+
+
+class DrugComparisonExplainRequest(BaseModel):
+    user_role: UserRole | None = None
+
+
+class DrugEvidenceScore(BaseModel):
+    response_signal_score: float | None = None
+    binding_signal_score: float | None = None
+    carcinogenicity_flag: bool = False
+    resistance_flag: bool = False
+    evidence_support_score: float | None = None
+    data_completeness_score: float = 0.0
+    uncertainty_score: float = 1.0
+    overall_review_priority: ReviewPriority = "insufficient_data"
+    explanation_summary: str

@@ -176,6 +176,48 @@ The same MAMMAL interpretation can be explained differently depending on the use
 
 The local LLM does not create the biomedical interpretation. MAMMAL does. The local LLM formats and explains MAMMAL's structured output for the selected user type.
 
+## Powerful Cancer Drug Evidence Comparison
+
+PhuckCancer includes a drug evidence comparison workspace for organizing and comparing cancer drugs across molecular targets, cancer contexts, MAMMAL task outputs, resistance notes, clinical-trial notes, and evidence scores.
+
+The goal is to help users compare many drugs across many cancer evidence contexts instead of reviewing one result at a time.
+
+The comparison workspace can organize:
+
+- Drug name, class, and SMILES chemical structure.
+- Known protein targets and pathways.
+- Cancer types, subtypes, biomarkers, and pathway context.
+- MAMMAL cell-line drug response task results.
+- MAMMAL drug-target interaction task results.
+- MAMMAL drug carcinogenicity task results.
+- Resistance notes.
+- Clinical-trial notes.
+- Evidence support scores.
+- Data completeness scores.
+- Review priority.
+
+PhuckCancer does not treat all drug evidence as the same. It separates the structured biological inputs needed for MAMMAL tasks from the evidence notes, reports, and local LLM explanations built around those results.
+
+### Drug Comparison Workflow
+
+```text
+Drug library
+-> drug SMILES and target metadata
+-> cancer context selection
+-> MAMMAL task selection
+-> cell-line drug response / drug-target interaction / carcinogenicity task runs
+-> comparison matrix
+-> evidence scoring
+-> role-based local LLM explanation
+-> doctor, family, research, or system report
+```
+
+### Why This Matters
+
+Cancer drug evidence is scattered across drug chemistry, target biology, gene-expression data, resistance findings, clinical-trial notes, and molecular reports. PhuckCancer brings those pieces into one workspace so users can compare signals across many drugs and many cancer contexts.
+
+This turns PhuckCancer into a MAMMAL-powered cancer drug evidence comparison system, not just a single-report reader.
+
 ## How MAMMAL and the Local LLM Work Together
 
 MAMMAL does not replace the normal local LLM. MAMMAL is the biomedical AI engine that reads cancer-related biological and molecular data. The local LLM is the explanation layer that turns the structured biomedical interpretation into language that doctors, researchers, patients, and families can understand.

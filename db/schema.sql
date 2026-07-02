@@ -142,3 +142,190 @@ CREATE TABLE IF NOT EXISTS user_role_preferences (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_role_preference (user_role)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS drug_library (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  drug_name VARCHAR(255) NOT NULL,
+  brand_names JSON,
+  drug_class VARCHAR(255),
+  mechanism_summary TEXT,
+  smiles TEXT,
+  known_targets JSON,
+  cancer_contexts JSON,
+  resistance_notes TEXT,
+  trial_notes TEXT,
+  evidence_notes TEXT,
+  source_label VARCHAR(500) NOT NULL,
+  source_url VARCHAR(1000),
+  synthetic_fixture BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_drug_library_name (drug_name),
+  INDEX idx_drug_library_class (drug_class),
+  INDEX idx_drug_library_fixture (synthetic_fixture)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS drug_targets (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  target_name VARCHAR(255) NOT NULL,
+  gene_symbol VARCHAR(128),
+  protein_name VARCHAR(500),
+  protein_sequence LONGTEXT,
+  pathway VARCHAR(255),
+  cancer_context VARCHAR(255),
+  notes TEXT,
+  source_label VARCHAR(500) NOT NULL,
+  synthetic_fixture BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_drug_targets_name (target_name),
+  INDEX idx_drug_targets_gene (gene_symbol),
+  INDEX idx_drug_targets_pathway (pathway),
+  INDEX idx_drug_targets_fixture (synthetic_fixture)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cancer_contexts (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  cancer_type VARCHAR(255) NOT NULL,
+  subtype VARCHAR(255),
+  biomarker VARCHAR(255),
+  pathway VARCHAR(255),
+  notes TEXT,
+  synthetic_fixture BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_cancer_context_type (cancer_type),
+  INDEX idx_cancer_context_biomarker (biomarker),
+  INDEX idx_cancer_context_pathway (pathway),
+  INDEX idx_cancer_context_fixture (synthetic_fixture)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS drug_target_links (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  drug_id BIGINT NOT NULL,
+  target_id BIGINT NOT NULL,
+  relationship_label VARCHAR(255),
+  source_label VARCHAR(500),
+  synthetic_fixture BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_drug_target_link (drug_id, target_id),
+  CONSTRAINT fk_drug_target_links_drug FOREIGN KEY (drug_id) REFERENCES drug_library(id) ON DELETE CASCADE,
+  CONSTRAINT fk_drug_target_links_target FOREIGN KEY (target_id) REFERENCES drug_targets(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS drug_cancer_context_links (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  drug_id BIGINT NOT NULL,
+  cancer_context_id BIGINT NOT NULL,
+  relationship_label VARCHAR(255),
+  source_label VARCHAR(500),
+  synthetic_fixture BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_drug_context_link (drug_id, cancer_context_id),
+  CONSTRAINT fk_drug_context_links_drug FOREIGN KEY (drug_id) REFERENCES drug_library(id) ON DELETE CASCADE,
+  CONSTRAINT fk_drug_context_links_context FOREIGN KEY (cancer_context_id) REFERENCES cancer_contexts(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS drug_resistance_notes (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  drug_id BIGINT NOT NULL,
+  cancer_context_id BIGINT,
+  note_text TEXT NOT NULL,
+  source_label VARCHAR(500) NOT NULL,
+  synthetic_fixture BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_drug_resistance_drug (drug_id),
+  CONSTRAINT fk_drug_resistance_drug FOREIGN KEY (drug_id) REFERENCES drug_library(id) ON DELETE CASCADE,
+  CONSTRAINT fk_drug_resistance_context FOREIGN KEY (cancer_context_id) REFERENCES cancer_contexts(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS drug_trial_notes (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  drug_id BIGINT NOT NULL,
+  cancer_context_id BIGINT,
+  note_text TEXT NOT NULL,
+  source_label VARCHAR(500) NOT NULL,
+  source_url VARCHAR(1000),
+  synthetic_fixture BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_drug_trial_drug (drug_id),
+  CONSTRAINT fk_drug_trial_drug FOREIGN KEY (drug_id) REFERENCES drug_library(id) ON DELETE CASCADE,
+  CONSTRAINT fk_drug_trial_context FOREIGN KEY (cancer_context_id) REFERENCES cancer_contexts(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS drug_comparison_runs (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  comparison_name VARCHAR(255) NOT NULL,
+  task_types JSON NOT NULL,
+  cell_line_names JSON,
+  h5ad_file_refs JSON,
+  status VARCHAR(64) NOT NULL DEFAULT 'prepared',
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_drug_comparison_status (status),
+  INDEX idx_drug_comparison_name (comparison_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS drug_comparison_items (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  comparison_id BIGINT NOT NULL,
+  drug_id BIGINT NOT NULL,
+  target_id BIGINT,
+  cancer_context_id BIGINT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_drug_comparison_items_comparison (comparison_id),
+  CONSTRAINT fk_drug_comparison_items_run FOREIGN KEY (comparison_id) REFERENCES drug_comparison_runs(id) ON DELETE CASCADE,
+  CONSTRAINT fk_drug_comparison_items_drug FOREIGN KEY (drug_id) REFERENCES drug_library(id) ON DELETE CASCADE,
+  CONSTRAINT fk_drug_comparison_items_target FOREIGN KEY (target_id) REFERENCES drug_targets(id) ON DELETE SET NULL,
+  CONSTRAINT fk_drug_comparison_items_context FOREIGN KEY (cancer_context_id) REFERENCES cancer_contexts(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS drug_comparison_results (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  comparison_id BIGINT NOT NULL,
+  item_id BIGINT,
+  task_type VARCHAR(128) NOT NULL,
+  status VARCHAR(64) NOT NULL,
+  mammal_task_run_id BIGINT,
+  result_json JSON,
+  missing_structured_data JSON,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_drug_comparison_results_comparison (comparison_id),
+  INDEX idx_drug_comparison_results_task (task_type),
+  CONSTRAINT fk_drug_comparison_results_run FOREIGN KEY (comparison_id) REFERENCES drug_comparison_runs(id) ON DELETE CASCADE,
+  CONSTRAINT fk_drug_comparison_results_item FOREIGN KEY (item_id) REFERENCES drug_comparison_items(id) ON DELETE SET NULL,
+  CONSTRAINT fk_drug_comparison_results_mammal_run FOREIGN KEY (mammal_task_run_id) REFERENCES mammal_task_runs(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS drug_evidence_scores (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  comparison_id BIGINT NOT NULL,
+  item_id BIGINT,
+  response_signal_score DECIMAL(6,3),
+  binding_signal_score DECIMAL(6,3),
+  carcinogenicity_flag BOOLEAN NOT NULL DEFAULT FALSE,
+  resistance_flag BOOLEAN NOT NULL DEFAULT FALSE,
+  evidence_support_score DECIMAL(6,3),
+  data_completeness_score DECIMAL(6,3) NOT NULL DEFAULT 0,
+  uncertainty_score DECIMAL(6,3) NOT NULL DEFAULT 1,
+  overall_review_priority VARCHAR(64) NOT NULL,
+  explanation_summary TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_drug_scores_comparison (comparison_id),
+  INDEX idx_drug_scores_priority (overall_review_priority),
+  CONSTRAINT fk_drug_scores_run FOREIGN KEY (comparison_id) REFERENCES drug_comparison_runs(id) ON DELETE CASCADE,
+  CONSTRAINT fk_drug_scores_item FOREIGN KEY (item_id) REFERENCES drug_comparison_items(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS drug_comparison_reports (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  comparison_id BIGINT NOT NULL,
+  report_type VARCHAR(128) NOT NULL,
+  report_markdown LONGTEXT,
+  report_json JSON,
+  output_path VARCHAR(1000),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_drug_reports_comparison (comparison_id),
+  CONSTRAINT fk_drug_reports_run FOREIGN KEY (comparison_id) REFERENCES drug_comparison_runs(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

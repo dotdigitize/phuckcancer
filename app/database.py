@@ -10,6 +10,21 @@ MAMMAL_TABLES = [
     "mammal_uploaded_files",
 ]
 
+DRUG_EVIDENCE_TABLES = [
+    "drug_library",
+    "drug_targets",
+    "cancer_contexts",
+    "drug_target_links",
+    "drug_cancer_context_links",
+    "drug_resistance_notes",
+    "drug_trial_notes",
+    "drug_comparison_runs",
+    "drug_comparison_items",
+    "drug_comparison_results",
+    "drug_evidence_scores",
+    "drug_comparison_reports",
+]
+
 
 def database_status() -> dict:
     settings = get_settings()
@@ -21,6 +36,7 @@ def database_status() -> dict:
         "port": settings.database_port,
         "database": settings.database_name,
         "mammal_tables": MAMMAL_TABLES,
+        "drug_evidence_tables": DRUG_EVIDENCE_TABLES,
     }
     if not settings.enable_database:
         return {**base, "available": False, "mode": "disabled_local_fixture_mode"}

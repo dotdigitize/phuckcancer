@@ -7,6 +7,20 @@ from app.cbioportal_models import CbioPortalImportRequest
 from app.cbioportal_normalizer import normalize_mutations, normalize_studies
 from app.config import get_settings
 from app.database import database_status
+from app.drug_comparison import build_comparison_matrix, build_comparison_report
+from app.drug_comparison_runner import comparison_requirements, run_comparison_batch
+from app.drug_library import (
+    create_comparison,
+    create_context,
+    create_drug,
+    create_target,
+    get_comparison,
+    get_drug,
+    list_comparisons,
+    list_contexts,
+    list_drugs,
+    list_targets,
+)
 from app.evidence_matcher import match_claims_to_evidence
 from app.genomics_parser import build_alteration_matrix
 from app.local_llm import assistant_explain
@@ -28,8 +42,14 @@ from app.trial_signal import review_trial_signal
 from app.models import (
     AssistantRequest,
     AuditResult,
+    CancerContextRecord,
     CellLineDrugResponseRequest,
+    DrugComparisonCreateRequest,
+    DrugComparisonExplainRequest,
+    DrugComparisonRunRequest,
     DrugCarcinogenicityRequest,
+    DrugLibraryRecord,
+    DrugTargetRecord,
     DrugTargetInteractionRequest,
     MammalModelRegistryEntry,
     MammalTaskExplainRequest,
@@ -162,6 +182,130 @@ def mammal_model_registry_create(entry: MammalModelRegistryEntry):
     return {"model": entry.model_dump(), "status": "validated_not_persisted_without_mariadb_write_session"}
 
 
+@app.get("/api/drugs")
+def api_drugs(search: str = ""):
+    return {"drugs": [drug.model_dump() for drug in list_drugs(search)]}
+
+
+@app.get("/api/drugs/{drug_id}")
+def api_drug(drug_id: int):
+    drug = get_drug(drug_id)
+    if not drug:
+        return JSONResponse(status_code=404, content={"error": "drug_not_found"})
+    return drug
+
+
+@app.post("/api/drugs")
+def api_create_drug(record: DrugLibraryRecord):
+    return create_drug(record)
+
+
+@app.put("/api/drugs/{drug_id}")
+def api_update_drug(drug_id: int, record: DrugLibraryRecord):
+    from app.drug_library import update_drug
+
+    updated = update_drug(drug_id, record)
+    if not updated:
+        return JSONResponse(status_code=404, content={"error": "drug_not_found"})
+    return updated
+
+
+@app.get("/api/drug-targets")
+def api_targets(search: str = ""):
+    return {"targets": [target.model_dump() for target in list_targets(search)]}
+
+
+@app.post("/api/drug-targets")
+def api_create_target(record: DrugTargetRecord):
+    return create_target(record)
+
+
+@app.get("/api/cancer-contexts")
+def api_contexts(search: str = ""):
+    return {"contexts": [context.model_dump() for context in list_contexts(search)]}
+
+
+@app.post("/api/cancer-contexts")
+def api_create_context(record: CancerContextRecord):
+    return create_context(record)
+
+
+@app.post("/api/drug-comparisons")
+def api_create_comparison(request: DrugComparisonCreateRequest):
+    if not request.drug_ids:
+        return JSONResponse(status_code=400, content={"error": "drug_required", "message": "Drug comparison requires at least one drug."})
+    if not request.task_types:
+        return JSONResponse(status_code=400, content={"error": "task_type_required", "message": "Choose at least one MAMMAL task type."})
+    comparison = create_comparison(request)
+    return {"comparison": comparison, "requirements": comparison_requirements(comparison)}
+
+
+@app.get("/api/drug-comparisons")
+def api_list_comparisons():
+    return {"comparisons": list_comparisons()}
+
+
+@app.get("/api/drug-comparisons/{comparison_id}")
+def api_get_comparison(comparison_id: int):
+    comparison = get_comparison(comparison_id)
+    if not comparison:
+        return JSONResponse(status_code=404, content={"error": "comparison_not_found"})
+    return {"comparison": comparison, "requirements": comparison_requirements(comparison)}
+
+
+@app.post("/api/drug-comparisons/{comparison_id}/run")
+def api_run_comparison(comparison_id: int, request: DrugComparisonRunRequest | None = None):
+    comparison = get_comparison(comparison_id)
+    if not comparison:
+        return JSONResponse(status_code=404, content={"error": "comparison_not_found"})
+    result = run_comparison_batch(comparison, request)
+    if result.get("error") == "missing_structured_data":
+        return JSONResponse(status_code=400, content=result)
+    if result.get("error") == "mammal_unavailable":
+        return JSONResponse(status_code=503, content=result)
+    return result
+
+
+@app.get("/api/drug-comparisons/{comparison_id}/matrix")
+def api_comparison_matrix(comparison_id: int):
+    comparison = get_comparison(comparison_id)
+    if not comparison:
+        return JSONResponse(status_code=404, content={"error": "comparison_not_found"})
+    return build_comparison_matrix(comparison)
+
+
+@app.post("/api/drug-comparisons/{comparison_id}/explain")
+def api_explain_comparison(comparison_id: int, request: DrugComparisonExplainRequest):
+    comparison = get_comparison(comparison_id)
+    if not comparison:
+        return JSONResponse(status_code=404, content={"error": "comparison_not_found"})
+    if not request.user_role:
+        return JSONResponse(status_code=400, content={"error": "user_role_required", "message": "Choose a user type before generating an explanation."})
+    matrix = build_comparison_matrix(comparison)
+    if not comparison.get("results"):
+        return JSONResponse(status_code=400, content={"error": "completed_comparison_required", "message": "Completed comparison results are required before local LLM explanation."})
+    return assistant_explain(
+        AssistantRequest(
+            user_role=request.user_role,
+            mammal_interpretation={"comparison_matrix": matrix, "evidence_scores": [row.get("evidence_score") for row in matrix["rows"]]},
+            risk_flags=["llm_must_not_invent_missing_mammal_results", "qualified_human_review_required"],
+            safety_constraints=[
+                "Explain only completed comparison results and evidence score data.",
+                "Do not invent missing MAMMAL results, SMILES strings, protein sequences, gene-expression profiles, binding affinity, drug response, or carcinogenicity outputs.",
+                "Do not diagnose, prescribe, recommend treatment, predict survival, or determine trial eligibility.",
+            ],
+        )
+    )
+
+
+@app.post("/api/drug-comparisons/{comparison_id}/report")
+def api_report_comparison(comparison_id: int):
+    comparison = get_comparison(comparison_id)
+    if not comparison:
+        return JSONResponse(status_code=404, content={"error": "comparison_not_found"})
+    return build_comparison_report(comparison)
+
+
 def _task_response(task_type: str, payload: dict):
     try:
         return run_mammal_task(task_type, payload)
@@ -193,6 +337,31 @@ def mammal_task_drug_target_interaction(request: DrugTargetInteractionRequest):
 @app.post("/api/mammal/tasks/drug_carcinogenicity")
 def mammal_task_drug_carcinogenicity(request: DrugCarcinogenicityRequest):
     return _task_response("drug_carcinogenicity", request.model_dump(exclude_none=True))
+
+
+def _batch_task_response(task_type: str, payloads: list[dict]):
+    results = []
+    for payload in payloads:
+        result = _task_response(task_type, payload)
+        if isinstance(result, JSONResponse):
+            return result
+        results.append(result)
+    return {"task_type": task_type, "count": len(results), "results": results}
+
+
+@app.post("/api/mammal/tasks/batch/drug_target_interaction")
+def mammal_batch_drug_target_interaction(requests: list[DrugTargetInteractionRequest]):
+    return _batch_task_response("drug_target_interaction", [request.model_dump(exclude_none=True) for request in requests])
+
+
+@app.post("/api/mammal/tasks/batch/cell_line_drug_response")
+def mammal_batch_cell_line_drug_response(requests: list[CellLineDrugResponseRequest]):
+    return _batch_task_response("cell_line_drug_response", [request.model_dump(exclude_none=True) for request in requests])
+
+
+@app.post("/api/mammal/tasks/batch/drug_carcinogenicity")
+def mammal_batch_drug_carcinogenicity(requests: list[DrugCarcinogenicityRequest]):
+    return _batch_task_response("drug_carcinogenicity", [request.model_dump(exclude_none=True) for request in requests])
 
 
 @app.post("/api/mammal/tasks/protein_protein_interaction")
